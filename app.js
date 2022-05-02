@@ -21,20 +21,21 @@ const axios = require("axios")
 const ToDoItem = require("./models/ToDoItem")
 const Course = require('./models/Course')
 const Schedule = require('./models/Schedule')
-
+const result=require('./models/Result')
 // *********************************************************** //
 //  Loading JSON datasets
 // *********************************************************** //
 const courses = require('./public/data/courses20-21.json')
 
-
+const results=require('./public/data/f1Result.json')
 // *********************************************************** //
 //  Connecting to the database
 // *********************************************************** //
 
 const mongoose = require( 'mongoose' );
 //const mongodb_URI = 'mongodb://localhost:27017/cs103a_todo'
-const mongodb_URI = 'mongodb+srv://cs_sj:BrandeisSpr22@cluster0.kgugl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+const mongodb_URI = 'mongodb+srv://edwardliu980:<password>@cs103.m8mko.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+
 //mongodb+srv://cs103a:<password>@cluster0.kgugl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
 
 mongoose.connect( mongodb_URI, { useNewUrlParser: true, useUnifiedTopology: true } );
@@ -109,6 +110,11 @@ const isLoggedIn = (req,res,next) => {
 app.get("/", (req, res, next) => {
   res.render("index");
 });
+
+app.get("/", (req, res, next) => {
+  res.render("Home");
+});
+
 
 app.get("/about", (req, res, next) => {
   res.render("about");
