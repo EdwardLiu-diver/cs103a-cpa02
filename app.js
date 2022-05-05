@@ -18,14 +18,13 @@ const axios = require("axios")
 // *********************************************************** //
 //  Loading models
 // *********************************************************** //
-const ToDoItem = require("./models/ToDoItem")
-const Course = require('./models/Course')
+
+
 const Schedule = require('./models/Schedule')
-const result=require('./models/Result')
+const Result=require('./models/Result')
 // *********************************************************** //
 //  Loading JSON datasets
 // *********************************************************** //
-const courses = require('./public/data/courses20-21.json')
 
 const results=require('./public/data/f1Result.json')
 // *********************************************************** //
@@ -34,8 +33,8 @@ const results=require('./public/data/f1Result.json')
 
 const mongoose = require( 'mongoose' );
 //const mongodb_URI = 'mongodb://localhost:27017/cs103a_todo'
-const mongodb_URI = 'mongodb+srv://edwardliu980:<password>@cs103.m8mko.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
-
+const mongodb_URI = 'mongodb+srv://edwardliu980:Tiger980916@cs103.m8mko.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+//const mongodb_URI = 'mongodb+srv://cs_sj:BrandeisSpr22@cluster0.kgugl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
 //mongodb+srv://cs103a:<password>@cluster0.kgugl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
 
 mongoose.connect( mongodb_URI, { useNewUrlParser: true, useUnifiedTopology: true } );
@@ -111,9 +110,6 @@ app.get("/", (req, res, next) => {
   res.render("index");
 });
 
-app.get("/", (req, res, next) => {
-  res.render("Home");
-});
 
 
 app.get("/about", (req, res, next) => {
@@ -122,214 +118,72 @@ app.get("/about", (req, res, next) => {
 
 
 
-/*
-    ToDoList routes
-*/
-app.get('/todo',
-  isLoggedIn,   // redirect to /login if user is not logged in
-  async (req,res,next) => {
-    try{
-      let userId = res.locals.user._id;  // get the user's id
-      let items = await ToDoItem.find({userId:userId}); // lookup the user's todo items
-      res.locals.items = items;  //make the items available in the view
-      res.render("toDo");  // render to the toDo page
-    } catch (e){
-      next(e);
-    }
-  }
-  )
-
-  app.post('/todo/add',
-  isLoggedIn,
-  async (req,res,next) => {
-    try{
-      const {title,description} = req.body; // get title and description from the body
-      const userId = res.locals.user._id; // get the user's id
-      const createdAt = new Date(); // get the current date/time
-      let data = {title, description, userId, createdAt,} // create the data object
-      let item = new ToDoItem(data) // create the database object (and test the types are correct)
-      await item.save() // save the todo item in the database
-      res.redirect('/todo')  // go back to the todo page
-    } catch (e){
-      next(e);
-    }
-  }
-  )
-
-  app.get("/todo/delete/:itemId",
-    isLoggedIn,
-    async (req,res,next) => {
-      try{
-        const itemId=req.params.itemId; // get the id of the item to delete
-        await ToDoItem.deleteOne({_id:itemId}) // remove that item from the database
-        res.redirect('/todo') // go back to the todo page
-      } catch (e){
-        next(e);
-      }
-    }
-  )
-
-  app.get("/todo/completed/:value/:itemId",
-  isLoggedIn,
-  async (req,res,next) => {
-    try{
-      const itemId=req.params.itemId; // get the id of the item to delete
-      const completed = req.params.value=='true';
-      await ToDoItem.findByIdAndUpdate(itemId,{completed}) // remove that item from the database
-      res.redirect('/todo') // go back to the todo page
-    } catch (e){
-      next(e);
-    }
-  }
-)
 
 /* ************************
-  Functions needed for the course finder routes
+  Functions needed for the Results finder routes
    ************************ */
 
-function getNum(coursenum){
-  // separate out a coursenum 103A into 
-  // a num: 103 and a suffix: A
-  i=0;
-  while (i<coursenum.length && '0'<=coursenum[i] && coursenum[i]<='9'){
-    i=i+1;
-  }
-  return coursenum.slice(0,i);
-}
 
-
-function times2str(times){
-  // convert a course.times object into a list of strings
-  // e.g ["Lecture:Mon,Wed 10:00-10:50","Recitation: Thu 5:00-6:30"]
-  if (!times || times.length==0){
-    return ["not scheduled"]
-  } else {
-    return times.map(x => time2str(x))
-  }
-  
-}
-function min2HourMin(m){
-  // converts minutes since midnight into a time string, e.g.
-  // 605 ==> "10:05"  as 10:00 is 60*10=600 minutes after midnight
-  const hour = Math.floor(m/60);
-  const min = m%60;
-  if (min<10){
-    return `${hour}:0${min}`;
-  }else{
-    return `${hour}:${min}`;
-  }
-}
-
-function time2str(time){
-  // creates a Times string for a lecture or recitation, e.g. 
-  //     "Recitation: Thu 5:00-6:30"
-  const start = time.start
-  const end = time.end
-  const days = time.days
-  const meetingType = time['type'] || "Lecture"
-  const location = time['building'] || ""
-
-  return `${meetingType}: ${days.join(",")}: ${min2HourMin(start)}-${min2HourMin(end)} ${location}`
-}
-
-
-
-/* ************************
-  Loading (or reloading) the data into a collection
-   ************************ */
-// this route loads in the courses into the Course collection
-// or updates the courses if it is not a new collection
 
 app.get('/upsertDB',
   async (req,res,next) => {
     //await Course.deleteMany({})
-    for (course of courses){
-      const {subject,coursenum,section,term}=course;
-      const num = getNum(coursenum);
-      course.num=num
-      course.suffix = coursenum.slice(num.length)
-      course.strTimes = times2str(course.times)
-      await Course.findOneAndUpdate({subject,coursenum,section,term},course,{upsert:true})
+    for (result of results){
+      const {resultId}=result;
+      await Result.findOneAndUpdate({resultId},result,{upsert:true})
     }
-    const num = await Course.find({}).count();
+    const num = await Result.find({}).count();
     res.send("data uploaded: "+num)
   }
 )
 
 
-app.post('/courses/bySubject',
-  // show list of courses in a given subject
+app.post('/result/byDriver',
+  // show list of records in a given driver's name
   async (req,res,next) => {
-    const {subject} = req.body;
-    const courses = await Course.find({subject:subject,independent_study:false}).sort({term:1,num:1,section:1})
+    const {driver} = req.body;
+    const results = await Result.find({driverRef:driver}).sort({resultId:1})
     
-    res.locals.courses = courses
+    res.locals.results = results
     //res.locals.times2str = times2str
     //res.json(courses)
-    res.render('courselist')
+    res.render('resultlist')
   }
 )
 
-app.get('/courses/show/:courseId',
-  // show all info about a course given its courseid
-  async (req,res,next) => {
-    const {courseId} = req.params;
-    const course = await Course.findOne({_id:courseId})
-    res.locals.course = course
-    //res.locals.times2str = times2str
-    //res.json(course)
-    res.render('course')
-  }
-)
 
-app.get('/courses/byInst/:email',
-  // show a list of all courses taught by a given faculty
+app.post('/result/byConstructor',
   async (req,res,next) => {
-    const email = req.params.email+"@brandeis.edu";
-    const courses = await Course.find({instructor:email,independent_study:false})
+    const {constructor} = req.body;
+    const results = await Result.find({constructorRef:constructor}).sort({year:1})
+    res.locals.results = results
     //res.json(courses)
-    res.locals.courses = courses
-    res.render('courselist')
-  } 
-)
-
-app.post('/courses/byWord',
-  async (req,res,next) => {
-    const {word} = req.body;
-    if (word != ""){
-      const courses = await Course.find({name:{$regex:word},independent_study:false}).sort({term:1,num:1,section:1})
-      res.locals.courses = courses
-    }else{
-      res.locals.courses = []
-    }
-    res.locals.times2str = times2str
-    //res.json(courses)
-    res.render('courselist')
+    res.render('resultlist')
   }
 )
 
-app.post('/courses/byInst',
-  // show courses taught by a faculty send from a form
+app.post('/result/byYear',
   async (req,res,next) => {
-    const email = req.body.email+"@brandeis.edu";
-    const courses = 
-       await Course
-               .find({instructor:email,independent_study:false})
-               .sort({term:1,num:1,section:1})
+    const {year} = req.body;
+    const results= await Result.find({year:year})
+    res.locals.results = results
     //res.json(courses)
-    res.locals.courses = courses
-    //res.locals.times2str = times2str
-    res.render('courselist')
+    res.render('resultlist')
   }
 )
+//
+//Subscription part
+//
+//
+//
 
 app.use(isLoggedIn)
 
-app.get('/addCourse/:courseId',
+app.get('/addResult/:resultId',
   // add a course to the user's schedule
   async (req,res,next) => {
     try {
-      const courseId = req.params.courseId
+      const courseId = req.params.resultId;
       const userId = res.locals.user._id
       // check to make sure it's not already loaded
       const lookup = await Schedule.find({courseId,userId})
@@ -350,23 +204,22 @@ app.get('/schedule/show',
       const userId = res.locals.user._id;
       const courseIds = 
          (await Schedule.find({userId}))
-                        .sort(x => x.term)
                         .map(x => x.courseId)
-      res.locals.courses = await Course.find({_id:{$in: courseIds}})
-      res.render('schedule')
+      res.locals.results = await Result.find({resultId:courseIds})
+      res.render('subscription')
     } catch(e){
       next(e)
     }
   }
 )
 
-app.get('/schedule/remove/:courseId',
+app.get('/schedule/remove/:resultId',
   // remove a course from the user's schedule
   async (req,res,next) => {
     try {
       await Schedule.remove(
                 {userId:res.locals.user._id,
-                 courseId:req.params.courseId})
+                 courseId:req.params.resultId})
       res.redirect('/schedule/show')
 
     } catch(e){

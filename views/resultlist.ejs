@@ -1,0 +1,48 @@
+<h1>The records are</h1>
+<hr>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>RecordId</th>
+            <th>Driver</th>
+            <th>Constructor</th>
+            <th>Year</th>
+            <th>Starting Grid</th>
+            <th>Final Position</th>
+            <th>Grand Prix</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+    <% for (result of results){
+        %>
+      <tr class="mb-2"> 
+        <td>
+            <a href="/addResult/<%= result['resultId'] %>"> 
+            <%= result['resultId'] %>
+            </a>
+        </td>
+        <td><strong><%= result['driverRef'] %></strong></td>
+
+        <td>
+            <strong><%= result['constructorRef'] %></strong>
+        </td>
+
+        <td>
+            <%=result['year'] %>
+        </td>
+
+        <td><%=result['grid'] %></td>
+
+        <td><%=result['position'] %></td>
+
+        <td><%=result['name'] %></td>
+    </tr>
+    <% } %>
+    </tbody>
+</table>
+
+<pre>
+    <!-- 
+        <%= JSON.stringify(results,null,5) %> 
+    -->
+</pre>

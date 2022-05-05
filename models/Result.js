@@ -7,10 +7,10 @@ const Mixed = Schema.Types.Mixed;
 var resultSchema = Schema( {
     resultId: Number,
     grid: Number,
-    position: Number,
+    position: Mixed,
     driverRef: String,
     name: String,
-    year: Number,ß
+    year: Number,
     constructorRef: String,
 } );
 module.exports = mongoose.model( 'Result', resultSchema );

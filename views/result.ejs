@@ -1,0 +1,19 @@
+<div class="bg-light m-5 p-2 border border-primary border-2">
+    <div class="">
+        <strong><%= result.resultId%></strong>
+        <br>
+        <strong><%= result.name%></strong>, 
+        <strong><%= result.year%></strong>
+        
+    </div>
+    <div><a href="/addResult/<%= result['resultId'] %>">(add to Subscription)</a></div>
+    <div class="mb-1">
+       Driver: <%=result.driverRef %>
+       <br>
+       Constructor: <%=result.constructorRef  %>
+       <br>
+       Starting Grid: <%= result.grid %>
+       <br>
+       Final Position: <%= result.position %>
+    </div>
+</div>

@@ -1,0 +1,19 @@
+<div class="d-flex flex-wrap">
+    <% for (result of results) {   
+        %>
+    
+        <div class="p-2 m-2 w-25 border border-primary border-2">          
+            <strong><%= result.name %></strong>  <%= result.year%>  
+            <a href="/schedule/remove/<%= result.resultId %>">X</a>
+            <br>  
+            Driver: <%=result.driverRef %>
+            <br>
+            Constructor: <%=result.constructorRef  %>
+            <br>
+            Starting Grid: <%= result.grid %>
+            <br>
+             Final Position: <%= result.position %>
+        </div>
+        <% } %>
+        
+    </div>
