@@ -32,11 +32,10 @@ const results=require('./public/data/f1Result.json')
 // *********************************************************** //
 
 const mongoose = require( 'mongoose' );
-//const mongodb_URI = 'mongodb://localhost:27017/cs103a_todo'
-const mongodb_URI = 'mongodb+srv://edwardliu980:Tiger980916@cs103.m8mko.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
-//const mongodb_URI = 'mongodb+srv://cs_sj:BrandeisSpr22@cluster0.kgugl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
-//mongodb+srv://cs103a:<password>@cluster0.kgugl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
 
+//const mongodb_URI = 'mongodb+srv://edwardliu980:Tiger980916@cs103.m8mko.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+
+const mongodb_URI=process.env.mongodb_URI
 mongoose.connect( mongodb_URI, { useNewUrlParser: true, useUnifiedTopology: true } );
 // fix deprecation warnings
 mongoose.set('useFindAndModify', false); 
