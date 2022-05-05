@@ -14,7 +14,7 @@ const session = require("express-session"); // to handle sessions using cookies
 const debug = require("debug")("personalapp:server"); 
 const layouts = require("express-ejs-layouts");
 const axios = require("axios")
-
+const dotenv=require("dotenv")
 // *********************************************************** //
 //  Loading models
 // *********************************************************** //
@@ -34,6 +34,7 @@ const results=require('./public/data/f1Result.json')
 const mongoose = require( 'mongoose' );
 
 //const mongodb_URI = 'mongodb+srv://edwardliu980:Tiger980916@cs103.m8mko.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+dotenv.config();
 
 const mongodb_URI=process.env.mongodb_URI
 mongoose.connect( mongodb_URI, { useNewUrlParser: true, useUnifiedTopology: true } );
